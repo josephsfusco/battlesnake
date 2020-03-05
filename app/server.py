@@ -6,7 +6,7 @@ import bottle
 from bottle import HTTPResponse
 
 """
-adding a test comment 
+adding a test comment
 """
 @bottle.route("/")
 def index():
@@ -30,7 +30,7 @@ def start():
     data = bottle.request.json
     print("START:", json.dumps(data))
 
-    response = {"color": "#00FF00", "headType": "regular", "tailType": "regular"}
+    response = {"color": "#00e1ff", "headType": "fang", "tailType": "curled"}
     return HTTPResponse(
         status=200,
         headers={"Content-Type": "application/json"},
