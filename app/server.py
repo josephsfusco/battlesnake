@@ -41,8 +41,8 @@ def start():
     data = bottle.request.json
     print("START:", json.dumps(data))
 
-    board_Y = data.get("board").get("height")
-    board_X = data.get("board").get("width")
+    board_Y = data.get("board").get("height")-1
+    board_X = data.get("board").get("width")-1
 
     print("BOARD SIZE")
     print(board_X, board_Y)
@@ -54,30 +54,40 @@ def start():
         body=json.dumps(response),
     )
 
-"""
-def areWeGoingtoKillOurself(move, body):
-    
-    goodMove = True
+def areWeGoingToKillOurself(move, head, neck):
+  goodMove = True
+  #is moving up a good move?
+  if move == "up":
+    print("HEAD N NECK COMMIN IN HAWT: ")
+    print(head.y)
+    print(neck.y)
+    if head.y-1 == neck.y or head.y-1 == -1:
+      goodMove = False
+    #is moving down a good move?
+  elif move == "down":
+    print("HEAD N NECK COMMIN IN HAWT: ")
+    print(head.y)
+    print(neck.y)
+    if head.y+1 == neck.y or head.y+1 == board_Y:
+      goodMove = False
+  #is moving left a good idea?
+  if move == "left":
+    print("HEAD N NECK COMMIN IN HAWT: ")
+    print(head.x)
+    print(neck.x)
+    if head.x-1 == neck.x or head.x-1 == -1:
+      goodMove = False
+  #is moving right a good idea?
+  if move == "right":
+    print("HEAD N NECK COMMIN IN HAWT: ")
+    print(head.x)
+    print(neck.x)
+    if head.x+1 == neck.x or head.x+1 == board_X:
+      goodMove = False
 
-    if move == "up":
-        if body:
-            return False
-
-
-    elif move == "down":
-        if (body.y-- == body.y):
-            return False
-
-    elif (move == "left"): 
-        if (body.x-- == body.x): 
-            return False
-
-    elif (move == "right"):
-        if (body.x++ == body.y):
-            return False 
-
-    return goodMove
-"""
+  print("HOW MY MOVE LOOKIN'?")
+  print(goodMove)
+  return(goodMove)
 
 @bottle.post("/move")
 def move():
@@ -89,35 +99,33 @@ def move():
     """
     data = bottle.request.json
     print("MOVE:", json.dumps(data))
-    
+
 
     # get head coordinates & creaate head
     x = data.get("you").get("body")[0].get("x")
-    y = data.get("you").get("body")[0].get("y")    
+    y = data.get("you").get("body")[0].get("y")
     head = body(x,y)
 
     x = data.get("you").get("body")[1].get("x")
-    y = data.get("you").get("body")[1].get("y")  
+    y = data.get("you").get("body")[1].get("y")
     neck = body(x,y)
 
-    
 
-    
+
+
     # Choose a random direction to move in
     directions = ["up", "down", "left", "right"]
-    #move = random.choice(directions)
-    move = "up"
-    
-    goodMove = True
+    move = random.choice(directions)
+    print("WHATS MY MOVE")
+    print(move)
+    print(type(directions))
+    directions = directions.remove(move)
+    goodMove = areWeGoingToKillOurself(move, head, neck)
 
-    # Are we going to kill ourself? 
-    if move == "up":
-        print("HEAD N NECK COMMIN IN HAWT: ")
-        print(body.y)
-        print(neck.y) 
-        if body.y+1 == neck.y or body.y+1 == board_Y:
-            goodMove = False
-
+    while not goodMove or len(directions)>0:
+      move = random.choice(directions)
+      directions = directions.remove(move)
+      goodMove = areWeGoingToKillOurself(move, head, neck)
 
 
     # Shouts are messages sent to all the other snakes in the game.
