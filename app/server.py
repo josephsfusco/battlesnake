@@ -8,8 +8,12 @@ from bottle import HTTPResponse
 """
 adding a test comment
 """
+board_X = 0
+board_Y = 0
 
 class body:
+    x = 0
+    y = 0
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -37,6 +41,12 @@ def start():
     data = bottle.request.json
     print("START:", json.dumps(data))
 
+    board_Y = data.get("board").get("height")
+    board_X = data.get("board").get("width")
+
+    print("BOARD SIZE")
+    print(board_X, board_Y)
+
     response = {"color": "#00e1ff", "headType": "fang", "tailType": "curled"}
     return HTTPResponse(
         status=200,
@@ -44,7 +54,7 @@ def start():
         body=json.dumps(response),
     )
 
-
+"""
 def areWeGoingtoKillOurself(move, body):
     
     goodMove = True
@@ -53,7 +63,7 @@ def areWeGoingtoKillOurself(move, body):
         if body:
             return False
 
-    """
+
     elif move == "down":
         if (body.y-- == body.y):
             return False
@@ -65,9 +75,9 @@ def areWeGoingtoKillOurself(move, body):
     elif (move == "right"):
         if (body.x++ == body.y):
             return False 
-"""
-    return goodMove
 
+    return goodMove
+"""
 
 @bottle.post("/move")
 def move():
@@ -91,6 +101,8 @@ def move():
     neck = body(x,y)
 
     
+
+    
     # Choose a random direction to move in
     directions = ["up", "down", "left", "right"]
     #move = random.choice(directions)
@@ -100,8 +112,10 @@ def move():
 
     # Are we going to kill ourself? 
     if move == "up":
-        hy = body.y + 1 
-        if hy == neck.y:
+        print("HEAD N NECK COMMIN IN HAWT: ")
+        print(body.y)
+        print(neck.y) 
+        if body.y+1 == neck.y or body.y+1 == board_Y:
             goodMove = False
 
 
