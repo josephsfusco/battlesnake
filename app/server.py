@@ -8,6 +8,13 @@ from bottle import HTTPResponse
 """
 adding a test comment
 """
+
+class body:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+
 @bottle.route("/")
 def index():
     return "Your Battlesnake is alive!"
@@ -38,6 +45,30 @@ def start():
     )
 
 
+def areWeGoingtoKillOurself(move, body):
+    
+    goodMove = True
+
+    if move == "up":
+        if body:
+            return False
+
+    """
+    elif move == "down":
+        if (body.y-- == body.y):
+            return False
+
+    elif (move == "left"): 
+        if (body.x-- == body.x): 
+            return False
+
+    elif (move == "right"):
+        if (body.x++ == body.y):
+            return False 
+"""
+    return goodMove
+
+
 @bottle.post("/move")
 def move():
 
@@ -48,14 +79,36 @@ def move():
     """
     data = bottle.request.json
     print("MOVE:", json.dumps(data))
+    
 
+    # get head coordinates & creaate head
+    x = data.get("you").get("body")[0].get("x")
+    y = data.get("you").get("body")[0].get("y")    
+    head = body(x,y)
+
+    x = data.get("you").get("body")[1].get("x")
+    y = data.get("you").get("body")[1].get("y")  
+    neck = body(x,y)
+
+    
     # Choose a random direction to move in
     directions = ["up", "down", "left", "right"]
-    move = random.choice(directions)
+    #move = random.choice(directions)
+    move = "up"
+    
+    goodMove = True
+
+    # Are we going to kill ourself? 
+    if move == "up":
+        hy = body.y + 1 
+        if hy == neck.y:
+            goodMove = False
+
+
 
     # Shouts are messages sent to all the other snakes in the game.
     # Shouts are not displayed on the game board.
-    shout = "I am a python snake!"
+    shout = "Meattballs coming through!"
 
     response = {"move": move, "shout": shout}
     return HTTPResponse(
