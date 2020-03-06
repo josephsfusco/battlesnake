@@ -70,18 +70,12 @@ def areWeGoingToKillOurself(move, snekBody, snekLength,snakePit):
         if (tempNode == snekBody[i]):
           goodMove = False
 
-    print("GOING INTO THE SNAKEPIT!!!!!")
     if goodMove:
       for i in range(0,len(snakePit)):
-        print(f"******* I is {i} *******")
-        print(f"Whole body of other snake {snakePit}")
-        print(f"HOW BIG IS OTHER SNAKE!! {snakePit}")
         for j in range(0,len(snakePit[i].get("body"))):
           print(f"******* J is {j} *******")
           myNode = {"x": snekBody[0].get("x") ,"y": snekBody[0].get("y")-1}
           badNode = snakePit[i].get("body")[j]
-          print(f"********{badNode} ************")
-          print(f"********{myNode} ************")
           if (tempNode == badNode):
             goodMove = False
             break
@@ -97,18 +91,11 @@ def areWeGoingToKillOurself(move, snekBody, snekLength,snakePit):
         if (tempNode == snekBody[i]):
           goodMove = False
 
-    print("GOING INTO THE SNAKEPIT!!!!!")
     if goodMove:
       for i in range(0,len(snakePit)):
-        print(f"******* I is {i} *******")
-        print(f"Whole body of other snake {snakePit}")
-        print(f"HOW BIG IS OTHER SNAKE!! {snakePit}")
         for j in range(0,len(snakePit[i].get("body"))):
-          print(f"******* J is {j} *******")
           myNode = {"x": snekBody[0].get("x") ,"y": snekBody[0].get("y")+1}
           badNode = snakePit[i].get("body")[j]
-          print(f"********{badNode} ************")
-          print(f"********{myNode} ************")
           if (tempNode == badNode):
             goodMove = False
             break
@@ -124,18 +111,11 @@ def areWeGoingToKillOurself(move, snekBody, snekLength,snakePit):
         if (tempNode == snekBody[i]):
           goodMove = False
 
-    print("GOING INTO THE SNAKEPIT!!!!!")
     if goodMove:
       for i in range(0,len(snakePit)):
-        print(f"******* I is {i} *******")
-        print(f"Whole body of other snake {snakePit}")
-        print(f"HOW BIG IS OTHER SNAKE!! {snakePit}")
         for j in range(0,len(snakePit[i].get("body"))):
-          print(f"******* J is {j} *******")
           myNode = {"x": snekBody[0].get("x")-1 ,"y": snekBody[0].get("y")}
           badNode = snakePit[i].get("body")[j]
-          print(f"********{badNode} ************")
-          print(f"********{myNode} ************")
           if (tempNode == badNode):
             goodMove = False
             break
@@ -151,18 +131,12 @@ def areWeGoingToKillOurself(move, snekBody, snekLength,snakePit):
         if (tempNode == snekBody[i]):
           goodMove = False
 
-    print("GOING INTO THE SNAKEPIT!!!!!")
     if goodMove:
       for i in range(0,len(snakePit)):
-        print(f"******* I is {i} *******")
-        print(f"Whole body of other snake {snakePit}")
-        print(f"HOW BIG IS OTHER SNAKE!! {snakePit}")
         for j in range(0,len(snakePit[i].get("body"))):
           print(f"******* J is {j} *******")
           myNode = {"x": snekBody[0].get("x")-1 ,"y": snekBody[0].get("y")}
           badNode = snakePit[i].get("body")[j]
-          print(f"********{badNode} ************")
-          print(f"********{myNode} ************")
           if (tempNode == badNode):
             goodMove = False
             break
@@ -199,7 +173,6 @@ def move():
     snekLength = len(snekBody)
     schooloFish = data.get("board").get("food")
     snakePit = data.get("board").get("snakes")
-    print(f"PRINTING OUT NEW VARS {snakePit}")
 
     # directions to choose from
     directions = ["up", "down", "left", "right"]
