@@ -11,12 +11,14 @@ adding a test comment
 board_X = 0
 board_Y = 0
 
-class body:
+class bodyy:
     x = 0
     y = 0
+
     def __init__(self, x, y):
         self.x = x
         self.y = y
+
 
 
 @bottle.route("/")
@@ -57,43 +59,107 @@ def start():
         body=json.dumps(response),
     )
 
-def areWeGoingToKillOurself(move, head, neck):
+def areWeGoingToKillOurself(move, snekBody, snekLength):
 
-  print(f"HEAD! \n H.Y: {head.y} - H.X {head.x} \n")
-  print(f"NECK! \n N.Y: {neck.y} - H.X {neck.x} \n")
+  #print(f"HEAD! \n H.Y: {head.y} - H.X {head.x} \n")
+  #print(f"NECK! \n N.Y: {neck.y} - H.X {neck.x} \n")
   #print(f"Move: {move} \n head: {head} \n neck: {neck} \n ")
   goodMove = True
   #is moving up a good move?
   if move == "up":
-    print(f"boardy: {board_Y}")
-    print(f"UP! \n H.Y: {head.y} - N.Y {neck.y} \n")
-    if (head.y-1 == neck.y) or (head.y == 0) :
+    #print(f"boardy: {board_Y}")
+    #print(f"UP! \n H.Y: {head.y} - N.Y {neck.y} \n")
+    if snekBody[0].get("y") == 0:
+
       goodMove = False
+
+    if goodMove: 
+      for i in range (1, snekLength):
+        #print(f"head: {snekBody[0].get('y')}")
+        #print(f"{i} - snek body {snekBody[i].get('y')}" )
+
+        tempNode = {"x": snekBody[0].get("x") ,"y": snekBody[0].get("y")-1}
+        #print(f"tempNode: {tempNode}")
+        if (tempNode == snekBody[i]):
+          goodMove = False
 
     #is moving down a good move?
   elif move == "down":
-    print(f"boardy: {board_Y}")
-    print(f"DOWN! \n H.Y: {head.y} - N.Y {neck.y} \n")
-    if (head.y+1 == neck.y) or (head.y == board_Y):
+    #print(f"boardy: {board_Y}")
+    #print(f"DOWN! \n H.Y: {head.y} - N.Y {neck.y} \n")
+    if snekBody[0].get("y") == board_Y:
       goodMove = False
+
+    if goodMove: 
+      for i in range (1, snekLength):
+        #print(f"head: {snekBody[0].get('y')}")
+        #print(f"{i} - snek body {snekBody[i].get('y')}" )
+
+        tempNode = {"x": snekBody[0].get("x"), "y": snekBody[0].get("y")+1}
+        #print(f"tempNode: {tempNode}")
+        if (tempNode == snekBody[i]):
+          goodMove = False
   
   #is moving left a good idea?
   elif move == "left":
-    print(f"boardx: {board_X}")
-    print(f"LEFT! \n H.X: {head.x} - N.X {neck.x} \n"  )
-    if (head.x-1 == neck.x) or (head.x == 0):
+    #print(f"boardx: {board_X}")
+    #print(f"LEFT! \n H.X: {head.x} - N.X {neck.x} \n"  )
+
+    if snekBody[0].get("x") == 0:
       goodMove = False
+
+    if goodMove: 
+      for i in range (1, snekLength):
+        #print(f"head: {snekBody[0].get('x')}")
+        #print(f"{i} - snek body {snekBody[i].get('x')}" )
+       
+        tempNode = {"x": snekBody[0].get("x")-1 ,"y": snekBody[0].get("y")}
+        #print(f"tempNode: {tempNode}")
+        if (tempNode == snekBody[i]):
+          goodMove = False
+
 
   #is moving right a good idea?
   elif move == "right":
-    print(f"boardx: {board_X}")
-    print(f"RIGHT! \n H.X: {head.x} - N.X {neck.x} \n")
-    if (head.x+1 == neck.x) or (head.x == board_X):
+    #print(f"boardx: {board_X}")
+    #print(f"RIGHT! \n H.X: {head.x} - N.X {neck.x} \n")
+    if snekBody[0].get("x") == board_X:
       goodMove = False
 
-  print("HOW MY MOVE LOOKIN'?")
-  print(goodMove)
+    if goodMove: 
+      for i in range (1, snekLength):
+        #print(f"head: {snekBody[0].get('x')}")
+        #print(f"{i} - snek body {snekBody[i].get('x')}" )
+
+        tempNode = {"x": snekBody[0].get("x")+1 ,"y": snekBody[0].get("y")}
+        #print(f"tempNode: {tempNode}")
+        if (tempNode == snekBody[i]):
+          goodMove = False
+
+
+  print(f"AM I GONNA STAY ALIVE? {goodMove}")
   return(goodMove)
+
+def gimmeGoldFish(snekBody, schooloFish):
+  schoolSize = len(schooloFish)
+
+  for i in range(0, schoolSize):
+    #check up
+    if schooloFish[i] == {"x": snekBody[0].get("x") ,"y": snekBody[0].get("y")-1}:
+      return "up"
+    #check down
+    elif schooloFish[i] == {"x": snekBody[0].get("x") ,"y": snekBody[0].get("y")+1}:
+      return "down"
+    #check left
+    elif schooloFish[i] == {"x": snekBody[0].get("x")-1 ,"y": snekBody[0].get("y")}:
+      return "left"
+    #check right
+    elif schooloFish[i] == {"x": snekBody[0].get("x")+1 ,"y": snekBody[0].get("y")}:
+      return "right"
+    else:
+      return None
+
+
 
 @bottle.post("/move")
 def move():
@@ -103,71 +169,44 @@ def move():
     The data parameter will contain information about the board.
     Your response must include your move of up, down, left, or right.
     """
+
     data = bottle.request.json
     print("MOVE:", json.dumps(data))
 
+    snekBody = data.get("you").get("body")
+    snekLength = len(snekBody)
+    schooloFish = data.get("board").get("food")
 
-    # get head coordinates & creaate head
-    x = data.get("you").get("body")[0].get("x")
-    y = data.get("you").get("body")[0].get("y")
-    head = body(x,y)
-
-    x = data.get("you").get("body")[1].get("x")
-    y = data.get("you").get("body")[1].get("y")
-    neck = body(x,y)
-
-
+    #print(f"body {snekBody}")
+    #print(f"length {snekLength}")
+    
     # Choose a random direction to move in
     directions = ["up", "down", "left", "right"]
 
-    #move = random.choice(directions)
-   #print(f"WHATS MY MOVE: {move} \n")
-
-    #directions.remove(move)
-    #goodMove = areWeGoingToKillOurself(move, head, neck)
-    #print(f"GOOD MOVE: {goodMove}")
-
     goodMove = False
+    move = None
 
+    move = gimmeGoldFish(snekBody, schooloFish)
+    print(f">>>>>>>>>>>>>>>>>>>>>>>>>>>snaklyfe<<<<<<<<<<<<<<<<: {move}")
 
-    print("##########    Attempt 1      ##########")
-    print(directions)
-    move = random.choice(directions)
-    print(f"WHATS MY MOVE: {move} \n ")
-    directions.remove(move)
-    goodMove = areWeGoingToKillOurself(move, head, neck)
-    print(f"GOOD MOVE: {goodMove}")
-  
-    if (goodMove == False):
+    if move == None:
+      for i in range (0, 4):
+        print(f">>>>>>>>  {i}  <<<<<<<<")
 
-      print("##########       Attempt 2        ##########")
-      print(directions)
-      move = random.choice(directions)
-      print(f"WHATS MY MOVE: {move} \n ")
-      directions.remove(move)
-      goodMove = areWeGoingToKillOurself(move, head, neck)
-      print(f"GOOD MOVE: {goodMove}")
-  
+        move = random.choice(directions)
+        print(f"WHATS MY MOVE: {move} \n ")
 
-    if (goodMove == False):
+        if len(directions) == 1:
+          print(f"LAST CHANCE - directions {directions}")
+          break
 
-      print("##########     Attempt 3       ##########")
-      print(directions)
-      move = random.choice(directions)
-      print(f"WHATS MY MOVE: {move} \n ")
-      directions.remove(move)
-      goodMove = areWeGoingToKillOurself(move, head, neck)
-      print(f"GOOD MOVE: {goodMove}")
-  
-
-    if (goodMove == False):
-
-      print("##########        Last chance       ##########")
-      print(directions)
-      move = directions[0]
-  
-
-
+        #pop direction
+        print(f"directions {directions}")
+        directions.remove(move)
+        goodMove = areWeGoingToKillOurself(move, snekBody, snekLength)
+        if goodMove:
+          print("good move! break!")
+          break
 
 
 
@@ -175,7 +214,7 @@ def move():
     # Shouts are not displayed on the game board.
     shout = "Meattballs coming through!"
 
-    print(f"MOVE before sending HTTPResponse {move}")
+    print(f"HTTPResponse move Response: {move}")
 
     response = {"move": move, "shout": shout}
     return HTTPResponse(
