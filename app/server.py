@@ -6,7 +6,7 @@ import bottle
 from bottle import HTTPResponse
 
 """
-adding a test comment
+establishing two global variables to track the size of the board
 """
 board_X = 0
 board_Y = 0
@@ -36,10 +36,7 @@ def ping():
 
 @bottle.post("/start")
 def start():
-    """
-    Called every time a new Battlesnake game starts and your snake is in it.
-    Your response will control how your snake is displayed on the board.
-    """
+
     data = bottle.request.json
     print("START:", json.dumps(data))
 
@@ -50,7 +47,6 @@ def start():
     board_X = data.get("board").get("width")-1
 
     print("BOARD SIZE")
-    print(f"Board_X: {board_X} \nBoard_Y: {board_Y} \n")
 
     response = {"color": "#00e1ff", "headType": "fang", "tailType": "curled"}
     return HTTPResponse(
@@ -59,90 +55,58 @@ def start():
         body=json.dumps(response),
     )
 
+#function to test whether a move is a good idea or if the snake is going to either run into a walll or it's own body
 def areWeGoingToKillOurself(move, snekBody, snekLength):
 
-  #print(f"HEAD! \n H.Y: {head.y} - H.X {head.x} \n")
-  #print(f"NECK! \n N.Y: {neck.y} - H.X {neck.x} \n")
-  #print(f"Move: {move} \n head: {head} \n neck: {neck} \n ")
   goodMove = True
   #is moving up a good move?
   if move == "up":
-    #print(f"boardy: {board_Y}")
-    #print(f"UP! \n H.Y: {head.y} - N.Y {neck.y} \n")
     if snekBody[0].get("y") == 0:
-
       goodMove = False
 
-    if goodMove: 
+    if goodMove:
       for i in range (1, snekLength):
-        #print(f"head: {snekBody[0].get('y')}")
-        #print(f"{i} - snek body {snekBody[i].get('y')}" )
-
         tempNode = {"x": snekBody[0].get("x") ,"y": snekBody[0].get("y")-1}
-        #print(f"tempNode: {tempNode}")
         if (tempNode == snekBody[i]):
           goodMove = False
 
-    #is moving down a good move?
+  #is moving down a good move?
   elif move == "down":
-    #print(f"boardy: {board_Y}")
-    #print(f"DOWN! \n H.Y: {head.y} - N.Y {neck.y} \n")
     if snekBody[0].get("y") == board_Y:
       goodMove = False
 
-    if goodMove: 
+    if goodMove:
       for i in range (1, snekLength):
-        #print(f"head: {snekBody[0].get('y')}")
-        #print(f"{i} - snek body {snekBody[i].get('y')}" )
-
         tempNode = {"x": snekBody[0].get("x"), "y": snekBody[0].get("y")+1}
-        #print(f"tempNode: {tempNode}")
         if (tempNode == snekBody[i]):
           goodMove = False
-  
+
   #is moving left a good idea?
   elif move == "left":
-    #print(f"boardx: {board_X}")
-    #print(f"LEFT! \n H.X: {head.x} - N.X {neck.x} \n"  )
-
     if snekBody[0].get("x") == 0:
       goodMove = False
 
-    if goodMove: 
+    if goodMove:
       for i in range (1, snekLength):
-        #print(f"head: {snekBody[0].get('x')}")
-        #print(f"{i} - snek body {snekBody[i].get('x')}" )
-       
         tempNode = {"x": snekBody[0].get("x")-1 ,"y": snekBody[0].get("y")}
-        #print(f"tempNode: {tempNode}")
         if (tempNode == snekBody[i]):
           goodMove = False
-
 
   #is moving right a good idea?
   elif move == "right":
-    #print(f"boardx: {board_X}")
-    #print(f"RIGHT! \n H.X: {head.x} - N.X {neck.x} \n")
     if snekBody[0].get("x") == board_X:
       goodMove = False
 
-    if goodMove: 
+    if goodMove:
       for i in range (1, snekLength):
-        #print(f"head: {snekBody[0].get('x')}")
-        #print(f"{i} - snek body {snekBody[i].get('x')}" )
-
         tempNode = {"x": snekBody[0].get("x")+1 ,"y": snekBody[0].get("y")}
-        #print(f"tempNode: {tempNode}")
         if (tempNode == snekBody[i]):
           goodMove = False
-
-
-  print(f"AM I GONNA STAY ALIVE? {goodMove}")
   return(goodMove)
 
+#function to see if there is a snack within an imidiate move of the snake head, if there is, return that move direction
 def gimmeGoldFish(snekBody, schooloFish):
   schoolSize = len(schooloFish)
-
   for i in range(0, schoolSize):
     #check up
     if schooloFish[i] == {"x": snekBody[0].get("x") ,"y": snekBody[0].get("y")-1}:
@@ -156,6 +120,7 @@ def gimmeGoldFish(snekBody, schooloFish):
     #check right
     elif schooloFish[i] == {"x": snekBody[0].get("x")+1 ,"y": snekBody[0].get("y")}:
       return "right"
+    #if no food near by return "none"
     else:
       return None
 
@@ -164,50 +129,40 @@ def gimmeGoldFish(snekBody, schooloFish):
 @bottle.post("/move")
 def move():
 
-    """
-    Called when the Battlesnake Engine needs to know your next move.
-    The data parameter will contain information about the board.
-    Your response must include your move of up, down, left, or right.
-    """
-
     data = bottle.request.json
     print("MOVE:", json.dumps(data))
-
+    #set snake body and length variables, load positions of goldfish
     snekBody = data.get("you").get("body")
     snekLength = len(snekBody)
     schooloFish = data.get("board").get("food")
 
-    #print(f"body {snekBody}")
-    #print(f"length {snekLength}")
-    
     # Choose a random direction to move in
     directions = ["up", "down", "left", "right"]
 
     goodMove = False
     move = None
 
+		#check snacks around and if it returns a move, send that move through
     move = gimmeGoldFish(snekBody, schooloFish)
     print(f">>>>>>>>>>>>>>>>>>>>>>>>>>>snaklyfe<<<<<<<<<<<<<<<<: {move}")
 
+	  #if no snacks return randomly choose a move and determine if it's a good one or not
     if move == None:
       for i in range (0, 4):
         print(f">>>>>>>>  {i}  <<<<<<<<")
-
         move = random.choice(directions)
         print(f"WHATS MY MOVE: {move} \n ")
 
         if len(directions) == 1:
           print(f"LAST CHANCE - directions {directions}")
           break
-
-        #pop direction
         print(f"directions {directions}")
+        #remove move used from directions list
         directions.remove(move)
         goodMove = areWeGoingToKillOurself(move, snekBody, snekLength)
         if goodMove:
           print("good move! break!")
           break
-
 
 
     # Shouts are messages sent to all the other snakes in the game.
