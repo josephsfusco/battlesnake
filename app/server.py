@@ -41,11 +41,14 @@ def start():
     data = bottle.request.json
     print("START:", json.dumps(data))
 
+    global board_Y
+    global board_X
+
     board_Y = data.get("board").get("height")-1
     board_X = data.get("board").get("width")-1
 
     print("BOARD SIZE")
-    print(board_X, board_Y)
+    print(f"Board_X: {board_X} \nBoard_Y: {board_Y} \n")
 
     response = {"color": "#00e1ff", "headType": "fang", "tailType": "curled"}
     return HTTPResponse(
@@ -55,34 +58,37 @@ def start():
     )
 
 def areWeGoingToKillOurself(move, head, neck):
+
+  print(f"HEAD! \n H.Y: {head.y} - H.X {head.x} \n")
+  print(f"NECK! \n N.Y: {neck.y} - H.X {neck.x} \n")
+  #print(f"Move: {move} \n head: {head} \n neck: {neck} \n ")
   goodMove = True
   #is moving up a good move?
   if move == "up":
-    print("HEAD N NECK COMMIN IN HAWT: ")
-    print(head.y)
-    print(neck.y)
-    if head.y-1 == neck.y or head.y-1 == -1:
+    print(f"boardy: {board_Y}")
+    print(f"UP! \n H.Y: {head.y} - N.Y {neck.y} \n")
+    if (head.y-1 == neck.y) or (head.y == 0) :
       goodMove = False
+
     #is moving down a good move?
   elif move == "down":
-    print("HEAD N NECK COMMIN IN HAWT: ")
-    print(head.y)
-    print(neck.y)
-    if head.y+1 == neck.y or head.y+1 == board_Y:
+    print(f"boardy: {board_Y}")
+    print(f"DOWN! \n H.Y: {head.y} - N.Y {neck.y} \n")
+    if (head.y+1 == neck.y) or (head.y == board_Y):
       goodMove = False
+  
   #is moving left a good idea?
-  if move == "left":
-    print("HEAD N NECK COMMIN IN HAWT: ")
-    print(head.x)
-    print(neck.x)
-    if head.x-1 == neck.x or head.x-1 == -1:
+  elif move == "left":
+    print(f"boardx: {board_X}")
+    print(f"LEFT! \n H.X: {head.x} - N.X {neck.x} \n"  )
+    if (head.x-1 == neck.x) or (head.x == 0):
       goodMove = False
+
   #is moving right a good idea?
-  if move == "right":
-    print("HEAD N NECK COMMIN IN HAWT: ")
-    print(head.x)
-    print(neck.x)
-    if head.x+1 == neck.x or head.x+1 == board_X:
+  elif move == "right":
+    print(f"boardx: {board_X}")
+    print(f"RIGHT! \n H.X: {head.x} - N.X {neck.x} \n")
+    if (head.x+1 == neck.x) or (head.x == board_X):
       goodMove = False
 
   print("HOW MY MOVE LOOKIN'?")
@@ -111,26 +117,65 @@ def move():
     neck = body(x,y)
 
 
-
-
     # Choose a random direction to move in
     directions = ["up", "down", "left", "right"]
-    move = random.choice(directions)
-    print("WHATS MY MOVE")
-    print(move)
-    print(type(directions))
-    directions = directions.remove(move)
-    goodMove = areWeGoingToKillOurself(move, head, neck)
 
-    while not goodMove or len(directions)>0:
+    #move = random.choice(directions)
+   #print(f"WHATS MY MOVE: {move} \n")
+
+    #directions.remove(move)
+    #goodMove = areWeGoingToKillOurself(move, head, neck)
+    #print(f"GOOD MOVE: {goodMove}")
+
+    goodMove = False
+
+
+    print("##########    Attempt 1      ##########")
+    print(directions)
+    move = random.choice(directions)
+    print(f"WHATS MY MOVE: {move} \n ")
+    directions.remove(move)
+    goodMove = areWeGoingToKillOurself(move, head, neck)
+    print(f"GOOD MOVE: {goodMove}")
+  
+    if (goodMove == False):
+
+      print("##########       Attempt 2        ##########")
+      print(directions)
       move = random.choice(directions)
-      directions = directions.remove(move)
+      print(f"WHATS MY MOVE: {move} \n ")
+      directions.remove(move)
       goodMove = areWeGoingToKillOurself(move, head, neck)
+      print(f"GOOD MOVE: {goodMove}")
+  
+
+    if (goodMove == False):
+
+      print("##########     Attempt 3       ##########")
+      print(directions)
+      move = random.choice(directions)
+      print(f"WHATS MY MOVE: {move} \n ")
+      directions.remove(move)
+      goodMove = areWeGoingToKillOurself(move, head, neck)
+      print(f"GOOD MOVE: {goodMove}")
+  
+
+    if (goodMove == False):
+
+      print("##########        Last chance       ##########")
+      print(directions)
+      move = directions[0]
+  
+
+
+
 
 
     # Shouts are messages sent to all the other snakes in the game.
     # Shouts are not displayed on the game board.
     shout = "Meattballs coming through!"
+
+    print(f"MOVE before sending HTTPResponse {move}")
 
     response = {"move": move, "shout": shout}
     return HTTPResponse(
