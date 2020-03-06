@@ -56,7 +56,7 @@ def start():
     )
 
 #function to test whether a move is a good idea or if the snake is going to either run into a walll or it's own body
-def areWeGoingToKillOurself(move, snekBody, snekLength):
+def areWeGoingToKillOurself(move, snekBody, snekLength,snakePit):
 
   goodMove = True
   #is moving up a good move?
@@ -70,6 +70,22 @@ def areWeGoingToKillOurself(move, snekBody, snekLength):
         if (tempNode == snekBody[i]):
           goodMove = False
 
+    print("GOING INTO THE SNAKEPIT!!!!!")
+    if goodMove:
+      for i in range(0,len(snakePit)):
+        print(f"******* I is {i} *******")
+        print(f"Whole body of other snake {snakePit}")
+        print(f"HOW BIG IS OTHER SNAKE!! {snakePit}")
+        for j in range(0,len(snakePit[i].get("body"))):
+          print(f"******* J is {j} *******")
+          myNode = {"x": snekBody[0].get("x") ,"y": snekBody[0].get("y")-1}
+          badNode = snakePit[i].get("body")[j]
+          print(f"********{badNode} ************")
+          print(f"********{myNode} ************")
+          if (tempNode == badNode):
+            goodMove = False
+            break
+
   #is moving down a good move?
   elif move == "down":
     if snekBody[0].get("y") == board_Y:
@@ -80,6 +96,22 @@ def areWeGoingToKillOurself(move, snekBody, snekLength):
         tempNode = {"x": snekBody[0].get("x"), "y": snekBody[0].get("y")+1}
         if (tempNode == snekBody[i]):
           goodMove = False
+
+    print("GOING INTO THE SNAKEPIT!!!!!")
+    if goodMove:
+      for i in range(0,len(snakePit)):
+        print(f"******* I is {i} *******")
+        print(f"Whole body of other snake {snakePit}")
+        print(f"HOW BIG IS OTHER SNAKE!! {snakePit}")
+        for j in range(0,len(snakePit[i].get("body"))):
+          print(f"******* J is {j} *******")
+          myNode = {"x": snekBody[0].get("x") ,"y": snekBody[0].get("y")+1}
+          badNode = snakePit[i].get("body")[j]
+          print(f"********{badNode} ************")
+          print(f"********{myNode} ************")
+          if (tempNode == badNode):
+            goodMove = False
+            break
 
   #is moving left a good idea?
   elif move == "left":
@@ -92,6 +124,22 @@ def areWeGoingToKillOurself(move, snekBody, snekLength):
         if (tempNode == snekBody[i]):
           goodMove = False
 
+    print("GOING INTO THE SNAKEPIT!!!!!")
+    if goodMove:
+      for i in range(0,len(snakePit)):
+        print(f"******* I is {i} *******")
+        print(f"Whole body of other snake {snakePit}")
+        print(f"HOW BIG IS OTHER SNAKE!! {snakePit}")
+        for j in range(0,len(snakePit[i].get("body"))):
+          print(f"******* J is {j} *******")
+          myNode = {"x": snekBody[0].get("x")-1 ,"y": snekBody[0].get("y")}
+          badNode = snakePit[i].get("body")[j]
+          print(f"********{badNode} ************")
+          print(f"********{myNode} ************")
+          if (tempNode == badNode):
+            goodMove = False
+            break
+
   #is moving right a good idea?
   elif move == "right":
     if snekBody[0].get("x") == board_X:
@@ -102,6 +150,22 @@ def areWeGoingToKillOurself(move, snekBody, snekLength):
         tempNode = {"x": snekBody[0].get("x")+1 ,"y": snekBody[0].get("y")}
         if (tempNode == snekBody[i]):
           goodMove = False
+
+    print("GOING INTO THE SNAKEPIT!!!!!")
+    if goodMove:
+      for i in range(0,len(snakePit)):
+        print(f"******* I is {i} *******")
+        print(f"Whole body of other snake {snakePit}")
+        print(f"HOW BIG IS OTHER SNAKE!! {snakePit}")
+        for j in range(0,len(snakePit[i].get("body"))):
+          print(f"******* J is {j} *******")
+          myNode = {"x": snekBody[0].get("x")-1 ,"y": snekBody[0].get("y")}
+          badNode = snakePit[i].get("body")[j]
+          print(f"********{badNode} ************")
+          print(f"********{myNode} ************")
+          if (tempNode == badNode):
+            goodMove = False
+            break
   return(goodMove)
 
 #function to see if there is a snack within an imidiate move of the snake head, if there is, return that move direction
@@ -125,18 +189,19 @@ def gimmeGoldFish(snekBody, schooloFish):
       return None
 
 
-
 @bottle.post("/move")
 def move():
 
     data = bottle.request.json
     print("MOVE:", json.dumps(data))
-    #set snake body and length variables, load positions of goldfish
+    #set snake body and length variables, load positions of goldfish, and other snakes
     snekBody = data.get("you").get("body")
     snekLength = len(snekBody)
     schooloFish = data.get("board").get("food")
+    snakePit = data.get("board").get("snakes")
+    print(f"PRINTING OUT NEW VARS {snakePit}")
 
-    # Choose a random direction to move in
+    # directions to choose from
     directions = ["up", "down", "left", "right"]
 
     goodMove = False
@@ -145,8 +210,6 @@ def move():
 		#check snacks around and if it returns a move, send that move through
     move = gimmeGoldFish(snekBody, schooloFish)
     print(f">>>>>>>>>>>>>>>>>>>>>>>>>>>snaklyfe<<<<<<<<<<<<<<<<: {move}")
-
-	  #if no snacks return randomly choose a move and determine if it's a good one or not
     if move == None:
       for i in range (0, 4):
         print(f">>>>>>>>  {i}  <<<<<<<<")
@@ -159,7 +222,7 @@ def move():
         print(f"directions {directions}")
         #remove move used from directions list
         directions.remove(move)
-        goodMove = areWeGoingToKillOurself(move, snekBody, snekLength)
+        goodMove = areWeGoingToKillOurself(move, snekBody, snekLength,snakePit)
         if goodMove:
           print("good move! break!")
           break
